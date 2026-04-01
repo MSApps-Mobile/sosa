@@ -1,6 +1,11 @@
 # SOSA™ — Supervised Orchestrated Secured Agents
 
+[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FMSApps-Mobile%2Fsosa&count_bg=%2379C83D&title_bg=%23555555&title=visitors&edge_flat=false)](https://github.com/MSApps-Mobile/sosa)
+[![GitHub stars](https://img.shields.io/github/stars/MSApps-Mobile/sosa?style=social)](https://github.com/MSApps-Mobile/sosa/stargazers)
+
 > A governance framework for production-grade autonomous AI operations.
+
+If you find SOSA useful, please ⭐ **[star this repo](https://github.com/MSApps-Mobile/sosa/stargazers)** — it helps other developers discover the framework and motivates us to keep building.
 
 AI agents today have a trust problem. Most are demos — not production tools.
 They skip confirmation on destructive actions, have no concept of token budgets,
@@ -30,7 +35,6 @@ Token budgets are enforced — waste is measured, reported, and reduced.
 **Plugins:**
 - [`sosa-orchestrator`](https://github.com/MSApps-Mobile/claude-plugins/tree/main/plugins/sosa-orchestrator) — budget tracking, task prioritisation, pause/resume
 - [`token-efficiency-audit`](https://github.com/MSApps-Mobile/claude-plugins/tree/main/plugins/token-efficiency-audit) — finds and eliminates token waste (O6 compliance)
-
 
 ---
 
@@ -69,7 +73,6 @@ Not "an AI that does things" — an agent with a defined scope it cannot exceed.
 ```
 
 All plugins available in the [MSApps Claude Plugins marketplace](https://github.com/MSApps-Mobile/claude-plugins).
-
 
 ---
 
