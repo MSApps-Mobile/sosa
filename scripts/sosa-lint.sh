@@ -23,7 +23,8 @@ fi
 
 # Pillar 2: Orchestrated — check for bloated descriptions
 echo ""
-echo "📋 Pillar 2: Orchestrated"SKILL_FILES=$(find "$TARGET" -name "SKILL.md" -o -name "role-spec.*" -o -name "agent-spec.*" 2>/dev/null | wc -l)
+echo "📋 Pillar 2: Orchestrated"
+SKILL_FILES=$(find "$TARGET" -name "SKILL.md" -o -name "role-spec.*" -o -name "agent-spec.*" 2>/dev/null | wc -l)
 if [ "$SKILL_FILES" -gt 0 ]; then
   echo "  ✅ Found $SKILL_FILES role spec file(s)"
 else
@@ -51,7 +52,8 @@ fi
 
 # Pillar 4: Agents — check for formal agent definition
 echo ""
-echo "📋 Pillar 4: Agents"if grep -rq "tools\|tool.*manifest\|capability" "$TARGET" 2>/dev/null; then
+echo "📋 Pillar 4: Agents"
+if grep -rq "tools\|tool.*manifest\|capability" "$TARGET" 2>/dev/null; then
   echo "  ✅ Tool/capability declarations found"
 else
   echo "  ⚠️  No tool manifest or capability declarations detected"
