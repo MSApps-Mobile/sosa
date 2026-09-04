@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Field report / question
+    url: https://github.com/MSApps-Mobile/sosa/discussions
+    about: Ran SOSA on a real agent fleet and something did not fit? Start here — these are the most useful reports we get.
+  - name: 🔒 Security disclosure
+    url: https://github.com/MSApps-Mobile/sosa/security/advisories/new
+    about: Report a linter rule that fails open, or spec guidance that would make an implementing system less safe.

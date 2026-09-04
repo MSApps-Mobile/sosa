@@ -1,0 +1,50 @@
+name: SOSA Lint
+
+# The README advertises "Every PR and push to main triggers the SOSA lint
+# workflow". Until this file existed that sentence was false — and the script it
+# names did not parse at all (two missing newlines swallowed a `SKILL_FILES=`
+# assignment and an `if`, so `bash -n` exited 2 and a visitor's first command
+# died on a syntax error). Both halves are fixed together: the script parses,
+# and CI proves it on every push.
+#
+# The lint targets are the two example agents, NOT the repo root. A linter that
+# has only ever been run against passing input has not been tested, so this job
+# asserts a known-POSITIVE (exit 0) and a known-NEGATIVE (exit 1) whose specs
+# differ by exactly one pillar. If the negative ever passes, the rule has failed
+# open — which is the vulnerability class SECURITY.md asks people to report.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Four-pillar compliance lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Assert PARSE before execution: a syntax error is the failure mode that
+      # shipped, and a half-run script still exits 0 from a pipeline.
+      - name: Script parses
+        run: bash -n scripts/sosa-lint.sh
+
+      - name: Script is executable
+        run: test -x scripts/sosa-lint.sh || { echo "scripts/sosa-lint.sh is not executable"; exit 1; }
+
+      - name: Known-positive — compliant agent must PASS
+        run: ./scripts/sosa-lint.sh examples/compliant-agent
+
+      - name: Known-negative — non-compliant agent must FAIL
+        run: |
+          if ./scripts/sosa-lint.sh examples/non-compliant-agent; then
+            echo "::error::The Secured rule FAILED OPEN — the non-compliant example passed the linter."
+            exit 1
+          fi
+          echo "Negative control correctly rejected."

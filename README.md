@@ -3,6 +3,7 @@
   <img src="https://img.shields.io/github/forks/MSApps-Mobile/sosa?style=social" alt="GitHub Forks">
   <img src="https://img.shields.io/badge/SOSA%E2%84%A2-v1.0-brightgreen" alt="SOSA v1.0">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License">
+  <a href="https://github.com/MSApps-Mobile/sosa/actions/workflows/sosa-lint.yml"><img src="https://github.com/MSApps-Mobile/sosa/actions/workflows/sosa-lint.yml/badge.svg" alt="SOSA Lint"></a>
   <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FMSApps-Mobile%2Fsosa&count_bg=%2379C83D&title_bg=%23555555&title=visitors&edge_flat=false" alt="Visitors"></a>
 </p>
 
@@ -19,6 +20,22 @@
 **Platform-agnostic. Works with Claude, OpenAI, LangChain, CrewAI, AutoGen, or any agent system.**
 
 If you find SOSA useful, please ⭐ **[star this repo](https://github.com/MSApps-Mobile/sosa/stargazers)** — it helps other developers discover the framework and motivates us to keep building.
+
+---
+
+## Try it in 60 seconds
+
+```bash
+git clone https://github.com/MSApps-Mobile/sosa.git && cd sosa
+./scripts/sosa-lint.sh examples/compliant-agent       # ✅ PASSED
+./scripts/sosa-lint.sh examples/non-compliant-agent   # ❌ FAILED — one pillar, one line
+```
+
+Those two agents differ by **exactly one line**: the compliant one references its
+credentials from the environment, the other pastes them into the role spec. That
+is the whole Secured pillar in a diff. Copy
+[`examples/compliant-agent/role-spec.yaml`](examples/compliant-agent/role-spec.yaml)
+as the starting point for your own agent.
 
 ---
 
@@ -193,7 +210,9 @@ Production-ready plugins that implement SOSA governance, available in the [MSApp
 SOSA compliance is enforced at three levels:
 
 ### 1. CI/CD — GitHub Actions (Automatic)
-Every PR and push to `main` triggers the SOSA lint workflow — four-pillar compliance check, secret scanning, role spec presence verification, and token efficiency warnings. **PRs that fail cannot be merged.**
+Every PR and push to `main` runs [`.github/workflows/sosa-lint.yml`](.github/workflows/sosa-lint.yml) — four-pillar compliance check, secret scanning, role spec presence verification, and token efficiency warnings. **PRs that fail cannot be merged.**
+
+The workflow lints a known-**positive** and a known-**negative** example and asserts both verdicts. A linter that has only ever been run against passing input has not been tested: if the negative control ever passes, the rule has failed open, and that is a security finding — see [SECURITY.md](SECURITY.md).
 
 ### 2. Local Linting (Pre-push)
 ```bash
@@ -219,6 +238,9 @@ Every PR includes the four-pillar checklist:
 | [**Enforcement Guide**](docs/ENFORCEMENT.md) | CI/CD, local linting, and human review enforcement |
 | [**SOSA for OpenAI**](https://github.com/MSApps-Mobile/sosa-openai) | Governance layer for OpenAI Agents SDK and AgentKit |
 | [**Claude Plugins**](https://github.com/MSApps-Mobile/claude-plugins) | 31 production plugins built on SOSA, including 4 SOSA governance plugins |
+| [**Examples**](examples/) | A compliant and a non-compliant reference agent — the linter's positive and negative controls |
+| [**Contributing**](CONTRIBUTING.md) | The four contribution shapes, ground rules, and the local check to run before pushing |
+| [**Security Policy**](SECURITY.md) | How to report a linter rule that fails open, or spec guidance that would make a system less safe |
 
 ---
 
@@ -262,7 +284,10 @@ Every PR includes the four-pillar checklist:
 
 ## Community
 
-- 💬 [Open an issue](https://github.com/MSApps-Mobile/sosa/issues) for bugs or feature requests
+- 💬 **[Discussions](https://github.com/MSApps-Mobile/sosa/discussions)** — ran SOSA on a real agent fleet and something did not fit? These field reports are the most useful contributions we get.
+- 🧩 **[Platform mappings](https://github.com/MSApps-Mobile/sosa/labels/good%20first%20issue)** — the easiest way in. You need to know one agent framework well, not SOSA.
+- 🐛 [Open an issue](https://github.com/MSApps-Mobile/sosa/issues) for bugs or spec ambiguities
+- 🤝 [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [SECURITY.md](SECURITY.md)
 - ⭐ Star the repo to help others find it
 
 ---

@@ -1,0 +1,74 @@
+# A minimal SOSA-compliant agent definition.
+# Every field below maps to a pillar check — see docs/SPECIFICATION.md.
+
+agent: invoice-chaser-BAD
+sosa_level: 2          # L1 Basic · L2 Standard · L3 Full
+
+# ── R — Role ───────────────────────────────────────────────────────────────
+role:
+  does: >
+    Reads unpaid invoices from the billing system and drafts one reminder email
+    per overdue invoice, in the customer's language.
+  does_not:
+    - Send email without human approval
+    - Modify invoice amounts, due dates, or payment status
+    - Contact anyone not already listed on the invoice
+  boundaries:
+    max_invoices_per_run: 50
+    lookback_days: 90
+
+# ── T — Tools (explicit manifest, least privilege) ─────────────────────────
+tools:
+  - name: billing.list_invoices
+    permissions: [read]
+    scope: "status=overdue"
+  - name: mail.draft
+    permissions: [write]
+    scope: "drafts only — no send capability is granted"
+  - name: translate.text
+    permissions: [read]
+
+# Credentials are referenced, never embedded.
+credentials:
+  billing_api_key: "EXAMPLE-NOT-A-REAL-KEY-0000000000"
+  mail_token: "EXAMPLE-NOT-A-REAL-TOKEN-000000000"
+
+# ── M — Memory ─────────────────────────────────────────────────────────────
+memory:
+  scope: persistent
+  store: "invoice_chaser_state (per-tenant, isolated)"
+  retains: ["invoice_id", "last_reminder_sent_at", "reminder_count"]
+  never_retains: ["customer PII beyond the billing contact", "payment card data"]
+
+# ── P — Planning ───────────────────────────────────────────────────────────
+planning:
+  mode: scheduled
+  cadence: "weekdays 09:00 tenant-local"
+  loop: plan-act-verify
+
+# ── Supervision — the trust gradient, per action class ─────────────────────
+supervision:
+  - action: read invoices
+    impact: low
+    mode: autonomous
+  - action: draft reminder
+    impact: low
+    mode: autonomous
+  - action: send reminder to a contact emailed before
+    impact: medium
+    mode: notify          # execute, then alert the human
+  - action: send reminder to a first-time contact
+    impact: high
+    mode: approve         # halt, require explicit confirmation
+  - action: issue a refund or credit note
+    impact: prohibited
+    mode: blocked
+escalation:
+  on: [tool error, scope breach, cost ceiling exceeded]
+  do: "stop, log full context, hand to human with options, resume only on authorization"
+
+# ── Audit ──────────────────────────────────────────────────────────────────
+audit:
+  log: "every tool invocation with timestamp, arguments, result, and token cost"
+  destination: "tenant audit log (append-only)"
+  on_failure: "reported explicitly — never silently swallowed"
